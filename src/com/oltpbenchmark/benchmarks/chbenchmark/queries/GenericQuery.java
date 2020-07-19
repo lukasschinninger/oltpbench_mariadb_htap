@@ -46,7 +46,6 @@ public abstract class GenericQuery extends Procedure {
 		StringBuilder query = new StringBuilder();
 		
 		try{
-			
 			FileReader input = new FileReader("src/com/oltpbenchmark/benchmarks/chbenchmark/queries/" + queryFile);
 			BufferedReader reader = new BufferedReader(input);
 			String line = reader.readLine();
@@ -71,6 +70,7 @@ public abstract class GenericQuery extends Procedure {
         if (owner != null)
             owner.setCurrStatement(stmt);
 
+        System.out.println(this.getClass());
     	LOG.debug(this.getClass());
         ResultSet rs = null;
         try {

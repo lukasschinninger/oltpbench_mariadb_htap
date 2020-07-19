@@ -37,38 +37,38 @@ public class OrderStatus extends TPCCProcedure {
     private static final Logger LOG = Logger.getLogger(OrderStatus.class);
 
 	public SQLStmt ordStatGetNewestOrdSQL = new SQLStmt(
-	        "SELECT O_ID, O_CARRIER_ID, O_ENTRY_D " +
+            ("SELECT O_ID, O_CARRIER_ID, O_ENTRY_D " +
             "  FROM " + TPCCConstants.TABLENAME_OPENORDER + 
             " WHERE O_W_ID = ? " + 
             "   AND O_D_ID = ? " + 
             "   AND O_C_ID = ? " +
-            " ORDER BY O_ID DESC LIMIT 1");
+            " ORDER BY O_ID DESC LIMIT 1").toLowerCase());
 
 	public SQLStmt ordStatGetOrderLinesSQL = new SQLStmt(
-	        "SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D " + 
+            ("SELECT OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DELIVERY_D " +
             "  FROM " + TPCCConstants.TABLENAME_ORDERLINE + 
             " WHERE OL_O_ID = ?" + 
             "   AND OL_D_ID = ?" + 
-            "   AND OL_W_ID = ?");
+            "   AND OL_W_ID = ?").toLowerCase());
 
 	public SQLStmt payGetCustSQL = new SQLStmt(
-	        "SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " + 
+            ("SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " +
             "       C_CITY, C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, " + 
             "       C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
             "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " +
-            "   AND C_ID = ?");
+            "   AND C_ID = ?").toLowerCase());
 
 	public SQLStmt customerByNameSQL = new SQLStmt(
-	        "SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " + 
+            ("SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " +
             "       C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, " +
             "       C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
             "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " +
             "   AND C_LAST = ? " + 
-            " ORDER BY C_FIRST");
+            " ORDER BY C_FIRST").toLowerCase());
 
 	private PreparedStatement ordStatGetNewestOrd = null;
 	private PreparedStatement ordStatGetOrderLines = null;
@@ -130,9 +130,9 @@ public class OrderStatus extends TPCCProcedure {
             throw new RuntimeException(msg);
         }
 
-        o_id = rs.getInt("O_ID");
-        o_carrier_id = rs.getInt("O_CARRIER_ID");
-        o_entry_d = rs.getTimestamp("O_ENTRY_D");
+        o_id = rs.getInt("O_ID".toLowerCase());
+        o_carrier_id = rs.getInt("O_CARRIER_ID".toLowerCase());
+        o_entry_d = rs.getTimestamp("O_ENTRY_D".toLowerCase());
         rs.close();
 
         // retrieve the order lines for the most recent order
@@ -146,16 +146,16 @@ public class OrderStatus extends TPCCProcedure {
         while (rs.next()) {
             StringBuilder sb = new StringBuilder();
             sb.append("[");
-            sb.append(rs.getLong("OL_SUPPLY_W_ID"));
+            sb.append(rs.getLong("OL_SUPPLY_W_ID".toLowerCase()));
             sb.append(" - ");
-            sb.append(rs.getLong("OL_I_ID"));
+            sb.append(rs.getLong("OL_I_ID".toLowerCase()));
             sb.append(" - ");
-            sb.append(rs.getLong("OL_QUANTITY"));
+            sb.append(rs.getLong("OL_QUANTITY".toLowerCase()));
             sb.append(" - ");
-            sb.append(TPCCUtil.formattedDouble(rs.getDouble("OL_AMOUNT")));
+            sb.append(TPCCUtil.formattedDouble(rs.getDouble("OL_AMOUNT".toLowerCase())));
             sb.append(" - ");
-            if (rs.getTimestamp("OL_DELIVERY_D") != null)
-                sb.append(rs.getTimestamp("OL_DELIVERY_D"));
+            if (rs.getTimestamp("OL_DELIVERY_D".toLowerCase()) != null)
+                sb.append(rs.getTimestamp("OL_DELIVERY_D".toLowerCase()));
             else
                 sb.append("99-99-9999");
             sb.append("]");
@@ -242,7 +242,7 @@ public class OrderStatus extends TPCCProcedure {
 
         Customer c = TPCCUtil.newCustomerFromResults(rs);
         c.c_id = c_id;
-        c.c_last = rs.getString("C_LAST");
+        c.c_last = rs.getString("C_LAST".toLowerCase());
         rs.close();
         return c;
     }
@@ -262,7 +262,7 @@ public class OrderStatus extends TPCCProcedure {
 
         while (rs.next()) {
             Customer c = TPCCUtil.newCustomerFromResults(rs);
-            c.c_id = rs.getInt("C_ID");
+            c.c_id = rs.getInt("C_ID".toLowerCase());
             c.c_last = c_last;
             customers.add(c);
         }

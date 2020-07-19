@@ -19,7 +19,8 @@ package com.oltpbenchmark.benchmarks.chbenchmark.queries;
 import com.oltpbenchmark.api.SQLStmt;
 
 public class Q2 extends GenericQuery {
-	
+
+	// NOT WORKING COLUMNSTORE CIURCULAR JOIN
     public final SQLStmt query_stmt = new SQLStmt(
               "SELECT su_suppkey, "
             +        "su_name, "

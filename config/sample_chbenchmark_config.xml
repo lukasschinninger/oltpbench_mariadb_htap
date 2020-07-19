@@ -4,15 +4,15 @@
 	<!-- Connection details -->
     <dbtype>mysql</dbtype>
     <driver>com.mysql.jdbc.Driver</driver>
-    <DBUrl>jdbc:mysql://localhost:3306/chbenchmark</DBUrl>
-    <username>root</username>
-    <password></password>
-    <isolation>TRANSACTION_SERIALIZABLE</isolation>
+    <DBUrl>jdbc:mysql://127.0.0.1:3306/innodb_db</DBUrl>
+    <username>user</username>
+    <password>password</password>
+    <isolation>TRANSACTION_REPEATABLE_READ</isolation>
     <uploadCode></uploadCode>
     <uploadUrl></uploadUrl>
 
 	<!-- Scale factor is the number of warehouses in TPCC -->
-	<scalefactor>2</scalefactor>
+	<scalefactor>10</scalefactor>
 
 	<!-- The workload -->
 	<!-- Number of terminal per workload -->
@@ -43,7 +43,7 @@
             <serial bench="tpcc">false</serial>
 
 			<!-- Must specify transaction weights for each workload -->
-			<weights bench="chbenchmark">5, 5, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4, 5, 4</weights>
+			<weights bench="chbenchmark">5, 5, 5, 4,  4, 5,  5, 4, 5, 4, 5, 4, 5, 4,  4, 5,  5, 4</weights>
 			<weights bench="tpcc">45,43,4,4,4</weights>
 		</work>
 
@@ -76,9 +76,6 @@
 			<name>Q1</name>
 		</transactiontype>
 		<transactiontype>
-			<name>Q2</name>
-		</transactiontype>
-		<transactiontype>
 			<name>Q3</name>
 		</transactiontype>
 		<transactiontype>
@@ -92,9 +89,6 @@
 		</transactiontype>
 		<transactiontype>
 			<name>Q7</name>
-		</transactiontype>
-		<transactiontype>
-			<name>Q8</name>
 		</transactiontype>
 		<transactiontype>
 			<name>Q9</name>
@@ -115,10 +109,6 @@
 			<name>Q14</name>
 		</transactiontype>
 		<transactiontype>
-			<!-- Needs optimization -->
-			<name>Q15</name>
-		</transactiontype>
-		<transactiontype>
 			<name>Q16</name>
 		</transactiontype>
 		<transactiontype>
@@ -126,9 +116,6 @@
 		</transactiontype>
 		<transactiontype>
 			<name>Q18</name>
-		</transactiontype>
-		<transactiontype>
-			<name>Q19</name>
 		</transactiontype>
 		<transactiontype>
 			<name>Q20</name>

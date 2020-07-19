@@ -17,6 +17,7 @@
 package com.oltpbenchmark.benchmarks.chbenchmark.queries;
 
 import com.oltpbenchmark.api.SQLStmt;
+import com.oltpbenchmark.benchmarks.chbenchmark.*;
 
 public class Q10 extends GenericQuery {
 	
@@ -27,10 +28,10 @@ public class Q10 extends GenericQuery {
             +        "c_city, "
             +        "c_phone, "
             +        "n_name "
-            + "FROM customer, "
-            +      "oorder, "
-            +      "order_line, "
-            +      "nation "
+            + "FROM " + CHBenCHmark.TABLE +".customer, "
+            +        CHBenCHmark.TABLE +".oorder, "
+            +        CHBenCHmark.TABLE +".order_line, "
+            +        CHBenCHmark.TABLE +".nation "
             + "WHERE c_id = o_c_id "
             +   "AND c_w_id = o_w_id "
             +   "AND c_d_id = o_d_id "

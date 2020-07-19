@@ -35,7 +35,10 @@ import com.oltpbenchmark.util.ClassUtil;
 
 public class CHBenCHmark extends BenchmarkModule {
 	private static final Logger LOG = Logger.getLogger(CHBenCHmark.class);
-	
+
+
+	public static String TABLE = "columnstore_db";
+
 	public CHBenCHmark(WorkloadConfiguration workConf) {
 		super("chbenchmark", workConf, true);
 	}
@@ -68,21 +71,7 @@ public class CHBenCHmark extends BenchmarkModule {
 	}
 
     private void tryDropOldViews() {
-        Q15 query = (Q15)ClassUtil.newInstance(Q15.class, new Object[0], new Class<?>[0]);
-        Connection conn = null;
-        try {
-            conn = makeConnection();
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(query.dropview_stmt.getSQL());
-        } catch (SQLException ex) {
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                }
-            }
-        }
+
     }
 	
 }

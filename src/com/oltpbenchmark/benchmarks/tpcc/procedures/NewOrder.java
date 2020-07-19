@@ -35,63 +35,63 @@ public class NewOrder extends TPCCProcedure {
     private static final Logger LOG = Logger.getLogger(NewOrder.class);
 
     public final SQLStmt stmtGetCustSQL = new SQLStmt(
-    		"SELECT C_DISCOUNT, C_LAST, C_CREDIT" +
+			("SELECT C_DISCOUNT, C_LAST, C_CREDIT" +
 	        "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
 	        " WHERE C_W_ID = ? " + 
 	        "   AND C_D_ID = ? " +
-	        "   AND C_ID = ?");
+	        "   AND C_ID = ?").toLowerCase());
 
     public final SQLStmt stmtGetWhseSQL = new SQLStmt(
-    		"SELECT W_TAX " + 
+			("SELECT W_TAX " +
 		    "  FROM " + TPCCConstants.TABLENAME_WAREHOUSE + 
-		    " WHERE W_ID = ?");
+		    " WHERE W_ID = ?").toLowerCase());
     
     public final SQLStmt stmtGetDistSQL = new SQLStmt(
-    		"SELECT D_NEXT_O_ID, D_TAX " +
+			("SELECT D_NEXT_O_ID, D_TAX " +
 	        "  FROM " + TPCCConstants.TABLENAME_DISTRICT +
-	        " WHERE D_W_ID = ? AND D_ID = ? FOR UPDATE");
+	        " WHERE D_W_ID = ? AND D_ID = ? FOR UPDATE").toLowerCase());
 
 	public final SQLStmt  stmtInsertNewOrderSQL = new SQLStmt(
-	        "INSERT INTO " + TPCCConstants.TABLENAME_NEWORDER +
+			("INSERT INTO " + TPCCConstants.TABLENAME_NEWORDER +
 	        " (NO_O_ID, NO_D_ID, NO_W_ID) " +
-            " VALUES ( ?, ?, ?)");
+            " VALUES ( ?, ?, ?)").toLowerCase());
 
 	public final SQLStmt  stmtUpdateDistSQL = new SQLStmt(
-	        "UPDATE " + TPCCConstants.TABLENAME_DISTRICT + 
+			("UPDATE " + TPCCConstants.TABLENAME_DISTRICT +
 	        "   SET D_NEXT_O_ID = D_NEXT_O_ID + 1 " +
             " WHERE D_W_ID = ? " +
-	        "   AND D_ID = ?");
+	        "   AND D_ID = ?").toLowerCase());
 
 	public final SQLStmt  stmtInsertOOrderSQL = new SQLStmt(
-	        "INSERT INTO " + TPCCConstants.TABLENAME_OPENORDER + 
+			("INSERT INTO " + TPCCConstants.TABLENAME_OPENORDER +
 	        " (O_ID, O_D_ID, O_W_ID, O_C_ID, O_ENTRY_D, O_OL_CNT, O_ALL_LOCAL)" + 
-            " VALUES (?, ?, ?, ?, ?, ?, ?)");
+            " VALUES (?, ?, ?, ?, ?, ?, ?)").toLowerCase());
 
 	public final SQLStmt  stmtGetItemSQL = new SQLStmt(
-	        "SELECT I_PRICE, I_NAME , I_DATA " +
+			("SELECT I_PRICE, I_NAME , I_DATA " +
             "  FROM " + TPCCConstants.TABLENAME_ITEM + 
-            " WHERE I_ID = ?");
+            " WHERE I_ID = ?").toLowerCase());
 
 	public final SQLStmt  stmtGetStockSQL = new SQLStmt(
-	        "SELECT S_QUANTITY, S_DATA, S_DIST_01, S_DIST_02, S_DIST_03, S_DIST_04, S_DIST_05, " +
+			("SELECT S_QUANTITY, S_DATA, S_DIST_01, S_DIST_02, S_DIST_03, S_DIST_04, S_DIST_05, " +
             "       S_DIST_06, S_DIST_07, S_DIST_08, S_DIST_09, S_DIST_10" +
             "  FROM " + TPCCConstants.TABLENAME_STOCK + 
             " WHERE S_I_ID = ? " +
-            "   AND S_W_ID = ? FOR UPDATE");
+            "   AND S_W_ID = ? FOR UPDATE").toLowerCase());
 
 	public final SQLStmt  stmtUpdateStockSQL = new SQLStmt(
-	        "UPDATE " + TPCCConstants.TABLENAME_STOCK + 
+			("UPDATE " + TPCCConstants.TABLENAME_STOCK +
 	        "   SET S_QUANTITY = ? , " +
             "       S_YTD = S_YTD + ?, " + 
 	        "       S_ORDER_CNT = S_ORDER_CNT + 1, " +
             "       S_REMOTE_CNT = S_REMOTE_CNT + ? " +
 	        " WHERE S_I_ID = ? " +
-            "   AND S_W_ID = ?");
+            "   AND S_W_ID = ?").toLowerCase());
 
 	public final SQLStmt  stmtInsertOrderLineSQL = new SQLStmt(
-	        "INSERT INTO " + TPCCConstants.TABLENAME_ORDERLINE + 
+			("INSERT INTO " + TPCCConstants.TABLENAME_ORDERLINE +
 	        " (OL_O_ID, OL_D_ID, OL_W_ID, OL_NUMBER, OL_I_ID, OL_SUPPLY_W_ID, OL_QUANTITY, OL_AMOUNT, OL_DIST_INFO) " +
-            " VALUES (?,?,?,?,?,?,?,?,?)");
+            " VALUES (?,?,?,?,?,?,?,?,?)").toLowerCase());
 
 
 	// NewOrder Txn
@@ -191,9 +191,9 @@ public class NewOrder extends TPCCProcedure {
 			if (!rs.next())
 				throw new RuntimeException("C_D_ID=" + d_id
 						+ " C_ID=" + c_id + " not found!");
-			c_discount = rs.getFloat("C_DISCOUNT");
-			c_last = rs.getString("C_LAST");
-			c_credit = rs.getString("C_CREDIT");
+			c_discount = rs.getFloat("C_DISCOUNT".toLowerCase());
+			c_last = rs.getString("C_LAST".toLowerCase());
+			c_credit = rs.getString("C_CREDIT".toLowerCase());
 			rs.close();
 			rs = null;
 
@@ -201,7 +201,7 @@ public class NewOrder extends TPCCProcedure {
 			rs = stmtGetWhse.executeQuery();
 			if (!rs.next())
 				throw new RuntimeException("W_ID=" + w_id + " not found!");
-			w_tax = rs.getFloat("W_TAX");
+			w_tax = rs.getFloat("W_TAX".toLowerCase());
 			rs.close();
 			rs = null;
 
@@ -212,8 +212,8 @@ public class NewOrder extends TPCCProcedure {
 				throw new RuntimeException("D_ID=" + d_id + " D_W_ID=" + w_id
 						+ " not found!");
 			}
-			d_next_o_id = rs.getInt("D_NEXT_O_ID");
-			d_tax = rs.getFloat("D_TAX");
+			d_next_o_id = rs.getInt("D_NEXT_O_ID".toLowerCase());
+			d_tax = rs.getFloat("D_TAX".toLowerCase());
 			rs.close();
 			rs = null;
 
@@ -278,9 +278,9 @@ public class NewOrder extends TPCCProcedure {
 									+ " not found!");
 				}
 
-				i_price = rs.getFloat("I_PRICE");
-				i_name = rs.getString("I_NAME");
-				i_data = rs.getString("I_DATA");
+				i_price = rs.getFloat("I_PRICE".toLowerCase());
+				i_name = rs.getString("I_NAME".toLowerCase());
+				i_data = rs.getString("I_DATA".toLowerCase());
 				rs.close();
 				rs = null;
 
@@ -294,18 +294,18 @@ public class NewOrder extends TPCCProcedure {
 				if (!rs.next())
 					throw new RuntimeException("I_ID=" + ol_i_id
 							+ " not found!");
-				s_quantity = rs.getInt("S_QUANTITY");
-				s_data = rs.getString("S_DATA");
-				s_dist_01 = rs.getString("S_DIST_01");
-				s_dist_02 = rs.getString("S_DIST_02");
-				s_dist_03 = rs.getString("S_DIST_03");
-				s_dist_04 = rs.getString("S_DIST_04");
-				s_dist_05 = rs.getString("S_DIST_05");
-				s_dist_06 = rs.getString("S_DIST_06");
-				s_dist_07 = rs.getString("S_DIST_07");
-				s_dist_08 = rs.getString("S_DIST_08");
-				s_dist_09 = rs.getString("S_DIST_09");
-				s_dist_10 = rs.getString("S_DIST_10");
+				s_quantity = rs.getInt("S_QUANTITY".toLowerCase());
+				s_data = rs.getString("S_DATA".toLowerCase());
+				s_dist_01 = rs.getString("S_DIST_01".toLowerCase());
+				s_dist_02 = rs.getString("S_DIST_02".toLowerCase());
+				s_dist_03 = rs.getString("S_DIST_03".toLowerCase());
+				s_dist_04 = rs.getString("S_DIST_04".toLowerCase());
+				s_dist_05 = rs.getString("S_DIST_05".toLowerCase());
+				s_dist_06 = rs.getString("S_DIST_06".toLowerCase());
+				s_dist_07 = rs.getString("S_DIST_07".toLowerCase());
+				s_dist_08 = rs.getString("S_DIST_08".toLowerCase());
+				s_dist_09 = rs.getString("S_DIST_09".toLowerCase());
+				s_dist_10 = rs.getString("S_DIST_10".toLowerCase());
 				rs.close();
 				rs = null;
 
@@ -382,7 +382,7 @@ public class NewOrder extends TPCCProcedure {
 				stmtInsertOrderLine.setInt(5, ol_i_id);
 				stmtInsertOrderLine.setInt(6, ol_supply_w_id);
 				stmtInsertOrderLine.setInt(7, ol_quantity);
-				stmtInsertOrderLine.setDouble(8, ol_amount);
+				stmtInsertOrderLine.setFloat(8, ol_amount);
 				stmtInsertOrderLine.setString(9, ol_dist_info);
 				stmtInsertOrderLine.addBatch();
 

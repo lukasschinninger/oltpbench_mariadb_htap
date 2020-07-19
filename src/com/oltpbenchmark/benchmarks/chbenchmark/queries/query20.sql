@@ -11,6 +11,7 @@ WHERE su_suppkey IN
        AND i_data LIKE 'co%'
      GROUP BY s_i_id,
               s_w_id,
+               mod(s_i_id * s_w_id, 10000),
               s_quantity HAVING 2*s_quantity > sum(ol_quantity))
   AND su_nationkey = n_nationkey
   AND n_name = 'Germany'

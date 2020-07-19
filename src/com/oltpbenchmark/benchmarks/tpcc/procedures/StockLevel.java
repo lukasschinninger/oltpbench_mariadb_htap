@@ -17,6 +17,7 @@
 package com.oltpbenchmark.benchmarks.tpcc.procedures;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,15 +33,16 @@ import com.oltpbenchmark.benchmarks.tpcc.TPCCWorker;
 public class StockLevel extends TPCCProcedure {
 
     private static final Logger LOG = Logger.getLogger(StockLevel.class);
+    private static long ts = System.currentTimeMillis();
 
 	public SQLStmt stockGetDistOrderIdSQL = new SQLStmt(
-	        "SELECT D_NEXT_O_ID " + 
+            ("SELECT D_NEXT_O_ID " +
             "  FROM " + TPCCConstants.TABLENAME_DISTRICT +
 	        " WHERE D_W_ID = ? " +
-            "   AND D_ID = ?");
+            "   AND D_ID = ?").toLowerCase());
 
 	public SQLStmt stockGetCountStockSQL = new SQLStmt(
-	        "SELECT COUNT(DISTINCT (S_I_ID)) AS STOCK_COUNT " +
+            ("SELECT COUNT(DISTINCT (S_I_ID)) AS STOCK_COUNT " +
 			" FROM " + TPCCConstants.TABLENAME_ORDERLINE + ", " + TPCCConstants.TABLENAME_STOCK +
 			" WHERE OL_W_ID = ?" +
 			" AND OL_D_ID = ?" +
@@ -48,7 +50,10 @@ public class StockLevel extends TPCCProcedure {
 			" AND OL_O_ID >= ?" +
 			" AND S_W_ID = ?" +
 			" AND S_I_ID = OL_I_ID" + 
-			" AND S_QUANTITY < ?");
+			" AND S_QUANTITY < ?").toLowerCase());
+
+
+	public String insertHeartBeatSql = "INSERT INTO heartbeat (master_ts, slave_ts) VALUES (NOW(),SYSDATE())";
 
 	// Stock Level Txn
 	private PreparedStatement stockGetDistOrderId = null;
@@ -58,6 +63,19 @@ public class StockLevel extends TPCCProcedure {
 				int w_id, int numWarehouses,
 				int terminalDistrictLowerID, int terminalDistrictUpperID,
 				TPCCWorker w) throws SQLException {
+
+	     long currTs = System.currentTimeMillis();
+
+	     // insert into heartbeat
+	     if((currTs-StockLevel.ts) > 1000){
+	         System.out.println("heartbeat");
+	         StockLevel.ts = System.currentTimeMillis();
+             // create a Statement from the connection
+             Statement statement = conn.createStatement();
+            // insert the data
+             int test =statement.executeUpdate(this.insertHeartBeatSql);
+             System.out.println(test);
+         }
 
 	     boolean trace = LOG.isTraceEnabled(); 
 	     
@@ -80,7 +98,7 @@ public class StockLevel extends TPCCProcedure {
          if (!rs.next()) {
              throw new RuntimeException("D_W_ID="+ w_id +" D_ID="+ d_id+" not found!");
          }
-         o_id = rs.getInt("D_NEXT_O_ID");
+         o_id = rs.getInt("D_NEXT_O_ID".toLowerCase());
          rs.close();
 
          stockGetCountStock.setInt(1, w_id);
@@ -99,7 +117,7 @@ public class StockLevel extends TPCCProcedure {
              if (trace) LOG.warn(msg);
              throw new RuntimeException(msg);
          }
-         stock_count = rs.getInt("STOCK_COUNT");
+         stock_count = rs.getInt("STOCK_COUNT".toLowerCase());
          if (trace) LOG.trace("stockGetCountStock RESULT=" + stock_count);
 
          conn.commit();

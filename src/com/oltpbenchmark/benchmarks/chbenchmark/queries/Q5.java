@@ -17,19 +17,20 @@
 package com.oltpbenchmark.benchmarks.chbenchmark.queries;
 
 import com.oltpbenchmark.api.SQLStmt;
+import com.oltpbenchmark.benchmarks.chbenchmark.*;
 
 public class Q5 extends GenericQuery {
 	
     public final SQLStmt query_stmt = new SQLStmt(
               "SELECT n_name, "
             +        "sum(ol_amount) AS revenue "
-            + "FROM customer, "
-            +      "oorder, "
-            +      "order_line, "
-            +      "stock, "
-            +      "supplier, "
-            +      "nation, "
-            +      "region "
+            + "FROM " + CHBenCHmark.TABLE +".customer, "
+            +        CHBenCHmark.TABLE +".oorder, "
+            +        CHBenCHmark.TABLE +".order_line, "
+            +        CHBenCHmark.TABLE +".stock, "
+            +        CHBenCHmark.TABLE +".supplier, "
+            +        CHBenCHmark.TABLE +".nation, "
+            +        CHBenCHmark.TABLE +".region "
             + "WHERE c_id = o_c_id "
             +   "AND c_w_id = o_w_id "
             +   "AND c_d_id = o_d_id "

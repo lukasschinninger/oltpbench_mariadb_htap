@@ -37,76 +37,76 @@ public class Payment extends TPCCProcedure {
     private static final Logger LOG = Logger.getLogger(Payment.class);
 
     public SQLStmt payUpdateWhseSQL = new SQLStmt(
-            "UPDATE " + TPCCConstants.TABLENAME_WAREHOUSE + 
+            ("UPDATE " + TPCCConstants.TABLENAME_WAREHOUSE +
             "   SET W_YTD = W_YTD + ? " +
-            " WHERE W_ID = ? ");
+            " WHERE W_ID = ? ").toLowerCase());
     
     public SQLStmt payGetWhseSQL = new SQLStmt(
-            "SELECT W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, W_NAME" + 
+            ("SELECT W_STREET_1, W_STREET_2, W_CITY, W_STATE, W_ZIP, W_NAME" +
             "  FROM " + TPCCConstants.TABLENAME_WAREHOUSE + 
-            " WHERE W_ID = ?");
+            " WHERE W_ID = ?").toLowerCase());
     
     public SQLStmt payUpdateDistSQL = new SQLStmt(
-            "UPDATE " + TPCCConstants.TABLENAME_DISTRICT + 
+            ("UPDATE " + TPCCConstants.TABLENAME_DISTRICT +
             "   SET D_YTD = D_YTD + ? " +
             " WHERE D_W_ID = ? " +
-            "   AND D_ID = ?");
+            "   AND D_ID = ?").toLowerCase());
     
     public SQLStmt payGetDistSQL = new SQLStmt(
-            "SELECT D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_NAME" + 
+            ("SELECT D_STREET_1, D_STREET_2, D_CITY, D_STATE, D_ZIP, D_NAME" +
             "  FROM " + TPCCConstants.TABLENAME_DISTRICT + 
             " WHERE D_W_ID = ? " +
-            "   AND D_ID = ?");
+            "   AND D_ID = ?").toLowerCase());
     
     public SQLStmt payGetCustSQL = new SQLStmt(
-            "SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " + 
+            ("SELECT C_FIRST, C_MIDDLE, C_LAST, C_STREET_1, C_STREET_2, " +
             "       C_CITY, C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, " + 
             "       C_DISCOUNT, C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
             "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " +
-            "   AND C_ID = ?");
+            "   AND C_ID = ?").toLowerCase());
     
     public SQLStmt payGetCustCdataSQL = new SQLStmt(
-            "SELECT C_DATA " +
+            ("SELECT C_DATA " +
             "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " +
-            "   AND C_ID = ?");
+            "   AND C_ID = ?").toLowerCase());
     
     public SQLStmt payUpdateCustBalCdataSQL = new SQLStmt(
-            "UPDATE " + TPCCConstants.TABLENAME_CUSTOMER + 
+            ("UPDATE " + TPCCConstants.TABLENAME_CUSTOMER +
             "   SET C_BALANCE = ?, " +
             "       C_YTD_PAYMENT = ?, " + 
             "       C_PAYMENT_CNT = ?, " +
             "       C_DATA = ? " +
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " + 
-            "   AND C_ID = ?");
+            "   AND C_ID = ?").toLowerCase());
     
     public SQLStmt payUpdateCustBalSQL = new SQLStmt(
-            "UPDATE " + TPCCConstants.TABLENAME_CUSTOMER + 
+            ("UPDATE " + TPCCConstants.TABLENAME_CUSTOMER +
             "   SET C_BALANCE = ?, " +
             "       C_YTD_PAYMENT = ?, " +
             "       C_PAYMENT_CNT = ? " +
             " WHERE C_W_ID = ? " + 
             "   AND C_D_ID = ? " + 
-            "   AND C_ID = ?");
+            "   AND C_ID = ?").toLowerCase());
     
     public SQLStmt payInsertHistSQL = new SQLStmt(
-            "INSERT INTO " + TPCCConstants.TABLENAME_HISTORY + 
+            ("INSERT INTO " + TPCCConstants.TABLENAME_HISTORY +
             " (H_C_D_ID, H_C_W_ID, H_C_ID, H_D_ID, H_W_ID, H_DATE, H_AMOUNT, H_DATA) " +
-            " VALUES (?,?,?,?,?,?,?,?)");
+            " VALUES (?,?,?,?,?,?,?,?)").toLowerCase());
     
     public SQLStmt customerByNameSQL = new SQLStmt(
-            "SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " + 
+            ("SELECT C_FIRST, C_MIDDLE, C_ID, C_STREET_1, C_STREET_2, C_CITY, " +
             "       C_STATE, C_ZIP, C_PHONE, C_CREDIT, C_CREDIT_LIM, C_DISCOUNT, " +
             "       C_BALANCE, C_YTD_PAYMENT, C_PAYMENT_CNT, C_SINCE " +
             "  FROM " + TPCCConstants.TABLENAME_CUSTOMER + 
             " WHERE C_W_ID = ? " +
             "   AND C_D_ID = ? " +
             "   AND C_LAST = ? " +
-            " ORDER BY C_FIRST");
+            " ORDER BY C_FIRST").toLowerCase());
 
     // Payment Txn
     private PreparedStatement payUpdateWhse = null;
@@ -173,7 +173,7 @@ public class Payment extends TPCCProcedure {
         String w_street_1, w_street_2, w_city, w_state, w_zip, w_name;
         String d_street_1, d_street_2, d_city, d_state, d_zip, d_name;
 
-        payUpdateWhse.setDouble(1, paymentAmount);
+        payUpdateWhse.setFloat(1, paymentAmount);
         payUpdateWhse.setInt(2, w_id);
         // MySQL reports deadlocks due to lock upgrades:
         // t1: read w_id = x; t2: update w_id = x; t1 update w_id = x
@@ -185,16 +185,16 @@ public class Payment extends TPCCProcedure {
         ResultSet rs = payGetWhse.executeQuery();
         if (!rs.next())
             throw new RuntimeException("W_ID=" + w_id + " not found!");
-        w_street_1 = rs.getString("W_STREET_1");
-        w_street_2 = rs.getString("W_STREET_2");
-        w_city = rs.getString("W_CITY");
-        w_state = rs.getString("W_STATE");
-        w_zip = rs.getString("W_ZIP");
-        w_name = rs.getString("W_NAME");
+        w_street_1 = rs.getString("W_STREET_1".toLowerCase());
+        w_street_2 = rs.getString("W_STREET_2".toLowerCase());
+        w_city = rs.getString("W_CITY".toLowerCase());
+        w_state = rs.getString("W_STATE".toLowerCase());
+        w_zip = rs.getString("W_ZIP".toLowerCase());
+        w_name = rs.getString("W_NAME".toLowerCase());
         rs.close();
         rs = null;
 
-        payUpdateDist.setDouble(1, paymentAmount);
+        payUpdateDist.setFloat(1, paymentAmount);
         payUpdateDist.setInt(2, w_id);
         payUpdateDist.setInt(3, districtID);
         result = payUpdateDist.executeUpdate();
@@ -206,12 +206,12 @@ public class Payment extends TPCCProcedure {
         rs = payGetDist.executeQuery();
         if (!rs.next())
             throw new RuntimeException("D_ID=" + districtID + " D_W_ID=" + w_id + " not found!");
-        d_street_1 = rs.getString("D_STREET_1");
-        d_street_2 = rs.getString("D_STREET_2");
-        d_city = rs.getString("D_CITY");
-        d_state = rs.getString("D_STATE");
-        d_zip = rs.getString("D_ZIP");
-        d_name = rs.getString("D_NAME");
+        d_street_1 = rs.getString("D_STREET_1".toLowerCase());
+        d_street_2 = rs.getString("D_STREET_2".toLowerCase());
+        d_city = rs.getString("D_CITY".toLowerCase());
+        d_state = rs.getString("D_STATE".toLowerCase());
+        d_zip = rs.getString("D_ZIP".toLowerCase());
+        d_name = rs.getString("D_NAME".toLowerCase());
         rs.close();
         rs = null;
 
@@ -235,7 +235,7 @@ public class Payment extends TPCCProcedure {
             rs = payGetCustCdata.executeQuery();
             if (!rs.next())
                 throw new RuntimeException("C_ID=" + c.c_id + " C_W_ID=" + customerWarehouseID + " C_D_ID=" + customerDistrictID + " not found!");
-            c_data = rs.getString("C_DATA");
+            c_data = rs.getString("C_DATA".toLowerCase());
             rs.close();
             rs = null;
 
@@ -243,8 +243,8 @@ public class Payment extends TPCCProcedure {
             if (c_data.length() > 500)
                 c_data = c_data.substring(0, 500);
 
-            payUpdateCustBalCdata.setDouble(1, c.c_balance);
-            payUpdateCustBalCdata.setDouble(2, c.c_ytd_payment);
+            payUpdateCustBalCdata.setFloat(1, c.c_balance);
+            payUpdateCustBalCdata.setFloat(2, c.c_ytd_payment);
             payUpdateCustBalCdata.setInt(3, c.c_payment_cnt);
             payUpdateCustBalCdata.setString(4, c_data);
             payUpdateCustBalCdata.setInt(5, customerWarehouseID);
@@ -257,8 +257,8 @@ public class Payment extends TPCCProcedure {
 
         } else { // GoodCredit
 
-            payUpdateCustBal.setDouble(1, c.c_balance);
-            payUpdateCustBal.setDouble(2, c.c_ytd_payment);
+            payUpdateCustBal.setFloat(1, c.c_balance);
+            payUpdateCustBal.setFloat(2, c.c_ytd_payment);
             payUpdateCustBal.setInt(3, c.c_payment_cnt);
             payUpdateCustBal.setInt(4, customerWarehouseID);
             payUpdateCustBal.setInt(5, customerDistrictID);
@@ -282,7 +282,7 @@ public class Payment extends TPCCProcedure {
         payInsertHist.setInt(4, districtID);
         payInsertHist.setInt(5, w_id);
         payInsertHist.setTimestamp(6, w.getBenchmarkModule().getTimestamp(System.currentTimeMillis()));
-        payInsertHist.setDouble(7, paymentAmount);
+        payInsertHist.setFloat(7, paymentAmount);
         payInsertHist.setString(8, h_data);
         payInsertHist.executeUpdate();
 
@@ -384,7 +384,7 @@ public class Payment extends TPCCProcedure {
 
         Customer c = TPCCUtil.newCustomerFromResults(rs);
         c.c_id = c_id;
-        c.c_last = rs.getString("C_LAST");
+        c.c_last = rs.getString("C_LAST".toLowerCase());
         rs.close();
         return c;
     }
@@ -402,7 +402,7 @@ public class Payment extends TPCCProcedure {
 
         while (rs.next()) {
             Customer c = TPCCUtil.newCustomerFromResults(rs);
-            c.c_id = rs.getInt("C_ID");
+            c.c_id = rs.getInt("C_ID".toLowerCase());
             c.c_last = customerLastName;
             customers.add(c);
         }

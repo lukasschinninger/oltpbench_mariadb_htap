@@ -17,30 +17,32 @@
 package com.oltpbenchmark.benchmarks.chbenchmark.queries;
 
 import com.oltpbenchmark.api.SQLStmt;
+import com.oltpbenchmark.benchmarks.chbenchmark.*;
 
 public class Q20 extends GenericQuery {
-	
+
     public final SQLStmt query_stmt = new SQLStmt(
-              "SELECT su_name, "
-            +        "su_address "
-            + "FROM supplier, "
-            +      "nation "
-            + "WHERE su_suppkey IN "
-            +     "(SELECT mod(s_i_id * s_w_id, 10000) "
-            +      "FROM stock "
-            +      "INNER JOIN item ON i_id = s_i_id "
-            +      "INNER JOIN order_line ON ol_i_id = s_i_id "
-            +      "WHERE ol_delivery_d > '2010-05-23 12:00:00' "
-            +        "AND i_data LIKE 'co%' "
-            +      "GROUP BY s_i_id, "
-            +               "s_w_id, "
-            +               "s_quantity HAVING 2*s_quantity > sum(ol_quantity)) "
-            +   "AND su_nationkey = n_nationkey "
-            +   "AND n_name = 'Germany' "
-            + "ORDER BY su_name"
-        );
-	
-		protected SQLStmt get_query() {
-	    return query_stmt;
-	}
+            "SELECT su_name, "
+                    + "su_address "
+                    + "FROM supplier, "
+                    + CHBenCHmark.TABLE + ".nation "
+                    + "WHERE su_suppkey IN "
+                    + "(SELECT mod(s_i_id * s_w_id, 10000) "
+                    + "FROM " + CHBenCHmark.TABLE + ".stock "
+                    + "INNER JOIN " + CHBenCHmark.TABLE + ".item ON i_id = s_i_id "
+                    + "INNER JOIN " + CHBenCHmark.TABLE + ".order_line ON ol_i_id = s_i_id "
+                    + "WHERE ol_delivery_d > '2010-05-23 12:00:00' "
+                    + "AND i_data LIKE 'co%' "
+                    + "GROUP BY s_i_id, "
+                    + "s_w_id, "
+                    + "mod(s_i_id * s_w_id, 10000), "
+                    + "s_quantity HAVING 2*s_quantity > sum(ol_quantity)) "
+                    + "AND su_nationkey = n_nationkey "
+                    + "AND n_name = 'Germany' "
+                    + "ORDER BY su_name"
+    );
+
+    protected SQLStmt get_query() {
+        return query_stmt;
+    }
 }

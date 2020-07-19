@@ -1,183 +1,191 @@
--- TODO: C_SINCE ON UPDATE CURRENT_TIMESTAMP,
-
 -- woonhak, turn off foreign key check, reference tpcc-mysql and tpcc specification
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+set @old_unique_checks=@@unique_checks, unique_checks=0;
+set @old_foreign_key_checks=@@foreign_key_checks, foreign_key_checks=0;
 
-DROP TABLE IF EXISTS CUSTOMER;
-DROP TABLE IF EXISTS DISTRICT;
-DROP TABLE IF EXISTS HISTORY;
-DROP TABLE IF EXISTS ITEM;
-DROP TABLE IF EXISTS NEW_ORDER;
-DROP TABLE IF EXISTS OORDER;
-DROP TABLE IF EXISTS ORDER_LINE;
-DROP TABLE IF EXISTS STOCK;
-DROP TABLE IF EXISTS WAREHOUSE;
+drop table if exists customer;
+drop table if exists district;
+drop table if exists history;
+drop table if exists item;
+drop table if exists new_order;
+drop table if exists oorder;
+drop table if exists order_line;
+drop table if exists stock;
+drop table if exists warehouse;
 
-CREATE TABLE CUSTOMER (
-  C_W_ID INT NOT NULL,
-  C_D_ID INT NOT NULL,
-  C_ID INT NOT NULL,
-  C_DISCOUNT DECIMAL(4,4) NOT NULL,
-  C_CREDIT CHAR(2) NOT NULL,
-  C_LAST VARCHAR(16) NOT NULL,
-  C_FIRST VARCHAR(16) NOT NULL,
-  C_CREDIT_LIM DECIMAL(12,2) NOT NULL,
-  C_BALANCE DECIMAL(12,2) NOT NULL,
-  C_YTD_PAYMENT FLOAT NOT NULL,
-  C_PAYMENT_CNT INT NOT NULL,
-  C_DELIVERY_CNT INT NOT NULL,
-  C_STREET_1 VARCHAR(20) NOT NULL,
-  C_STREET_2 VARCHAR(20) NOT NULL,
-  C_CITY VARCHAR(20) NOT NULL,
-  C_STATE CHAR(2) NOT NULL,
-  C_ZIP CHAR(9) NOT NULL,
-  C_PHONE CHAR(16) NOT NULL,
-  C_SINCE TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  C_MIDDLE CHAR(2) NOT NULL,
-  C_DATA VARCHAR(500) NOT NULL,
-  PRIMARY KEY (C_W_ID,C_D_ID,C_ID)
+
+create table heartbeat (
+  heartbeat_id int not null AUTO_INCREMENT,
+  master_ts timestamp not null,
+  slave_ts timestamp not null,
+  primary key (heartbeat_id)
 );
 
 
-CREATE TABLE DISTRICT (
-  D_W_ID INT NOT NULL,
-  D_ID INT NOT NULL,
-  D_YTD DECIMAL(12,2) NOT NULL,
-  D_TAX DECIMAL(4,4) NOT NULL,
-  D_NEXT_O_ID INT NOT NULL,
-  D_NAME VARCHAR(10) NOT NULL,
-  D_STREET_1 VARCHAR(20) NOT NULL,
-  D_STREET_2 VARCHAR(20) NOT NULL,
-  D_CITY VARCHAR(20) NOT NULL,
-  D_STATE CHAR(2) NOT NULL,
-  D_ZIP CHAR(9) NOT NULL,
-  PRIMARY KEY (D_W_ID,D_ID)
-);
 
--- TODO: H_DATE ON UPDATE CURRENT_TIMESTAMP
-
-CREATE TABLE HISTORY (
-  H_C_ID INT NOT NULL,
-  H_C_D_ID INT NOT NULL,
-  H_C_W_ID INT NOT NULL,
-  H_D_ID INT NOT NULL,
-  H_W_ID INT NOT NULL,
-  H_DATE TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  H_AMOUNT DECIMAL(6,2) NOT NULL,
-  H_DATA VARCHAR(24) NOT NULL
-);
-
-
-CREATE TABLE ITEM (
-  I_ID INT NOT NULL,
-  I_NAME VARCHAR(24) NOT NULL,
-  I_PRICE DECIMAL(5,2) NOT NULL,
-  I_DATA VARCHAR(50) NOT NULL,
-  I_IM_ID INT NOT NULL,
-  PRIMARY KEY (I_ID)
+create table customer (
+  c_w_id int not null,
+  c_d_id int not null,
+  c_id int not null,
+  c_discount decimal(4,4) not null,
+  c_credit char(2) not null,
+  c_last varchar(16) not null,
+  c_first varchar(16) not null,
+  c_credit_lim decimal(12,2) not null,
+  c_balance decimal(12,2) not null,
+  c_ytd_payment float not null,
+  c_payment_cnt int not null,
+  c_delivery_cnt int not null,
+  c_street_1 varchar(20) not null,
+  c_street_2 varchar(20) not null,
+  c_city varchar(20) not null,
+  c_state char(2) not null,
+  c_zip char(9) not null,
+  c_phone char(16) not null,
+  c_since timestamp not null default current_timestamp,
+  c_middle char(2) not null,
+  c_data varchar(500) not null,
+  primary key (c_w_id,c_d_id,c_id)
 );
 
 
-CREATE TABLE NEW_ORDER (
-  NO_W_ID INT NOT NULL,
-  NO_D_ID INT NOT NULL,
-  NO_O_ID INT NOT NULL,
-  PRIMARY KEY (NO_W_ID,NO_D_ID,NO_O_ID)
+create table district (
+  d_w_id int not null,
+  d_id int not null,
+  d_ytd decimal(12,2) not null,
+  d_tax decimal(4,4) not null,
+  d_next_o_id int not null,
+  d_name varchar(10) not null,
+  d_street_1 varchar(20) not null,
+  d_street_2 varchar(20) not null,
+  d_city varchar(20) not null,
+  d_state char(2) not null,
+  d_zip char(9) not null,
+  primary key (d_w_id,d_id)
 );
 
--- TODO: O_ENTRY_D  ON UPDATE CURRENT_TIMESTAMP
+-- todo: h_date on update current_timestamp
 
-CREATE TABLE OORDER (
-  O_W_ID INT NOT NULL,
-  O_D_ID INT NOT NULL,
-  O_ID INT NOT NULL,
-  O_C_ID INT NOT NULL,
-  O_CARRIER_ID INT DEFAULT NULL,
-  O_OL_CNT DECIMAL(2,0) NOT NULL,
-  O_ALL_LOCAL DECIMAL(1,0) NOT NULL,
-  O_ENTRY_D TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (O_W_ID,O_D_ID,O_ID),
-  UNIQUE (O_W_ID,O_D_ID,O_C_ID,O_ID)
+create table history (
+  h_c_id int not null,
+  h_c_d_id int not null,
+  h_c_w_id int not null,
+  h_d_id int not null,
+  h_w_id int not null,
+  h_date timestamp not null default current_timestamp,
+  h_amount decimal(6,2) not null,
+  h_data varchar(24) not null
 );
 
 
-CREATE TABLE ORDER_LINE (
-  OL_W_ID INT NOT NULL,
-  OL_D_ID INT NOT NULL,
-  OL_O_ID INT NOT NULL,
-  OL_NUMBER INT NOT NULL,
-  OL_I_ID INT NOT NULL,
-  OL_DELIVERY_D TIMESTAMP NULL DEFAULT NULL,
-  OL_AMOUNT DECIMAL(6,2) NOT NULL,
-  OL_SUPPLY_W_ID INT NOT NULL,
-  OL_QUANTITY DECIMAL(2,0) NOT NULL,
-  OL_DIST_INFO CHAR(24) NOT NULL,
-  PRIMARY KEY (OL_W_ID,OL_D_ID,OL_O_ID,OL_NUMBER)
+create table item (
+  i_id int not null,
+  i_name varchar(24) not null,
+  i_price decimal(5,2) not null,
+  i_data varchar(50) not null,
+  i_im_id int not null,
+  primary key (i_id)
 );
 
-CREATE TABLE STOCK (
-  S_W_ID INT NOT NULL,
-  S_I_ID INT NOT NULL,
-  S_QUANTITY DECIMAL(4,0) NOT NULL,
-  S_YTD DECIMAL(8,2) NOT NULL,
-  S_ORDER_CNT INT NOT NULL,
-  S_REMOTE_CNT INT NOT NULL,
-  S_DATA VARCHAR(50) NOT NULL,
-  S_DIST_01 CHAR(24) NOT NULL,
-  S_DIST_02 CHAR(24) NOT NULL,
-  S_DIST_03 CHAR(24) NOT NULL,
-  S_DIST_04 CHAR(24) NOT NULL,
-  S_DIST_05 CHAR(24) NOT NULL,
-  S_DIST_06 CHAR(24) NOT NULL,
-  S_DIST_07 CHAR(24) NOT NULL,
-  S_DIST_08 CHAR(24) NOT NULL,
-  S_DIST_09 CHAR(24) NOT NULL,
-  S_DIST_10 CHAR(24) NOT NULL,
-  PRIMARY KEY (S_W_ID,S_I_ID)
+
+create table new_order (
+  no_w_id int not null,
+  no_d_id int not null,
+  no_o_id int not null,
+  primary key (no_w_id,no_d_id,no_o_id)
 );
 
-CREATE TABLE WAREHOUSE (
-  W_ID INT NOT NULL,
-  W_YTD DECIMAL(12,2) NOT NULL,
-  W_TAX DECIMAL(4,4) NOT NULL,
-  W_NAME VARCHAR(10) NOT NULL,
-  W_STREET_1 VARCHAR(20) NOT NULL,
-  W_STREET_2 VARCHAR(20) NOT NULL,
-  W_CITY VARCHAR(20) NOT NULL,
-  W_STATE CHAR(2) NOT NULL,
-  W_ZIP CHAR(9) NOT NULL,
-  PRIMARY KEY (W_ID)
+-- todo: o_entry_d  on update current_timestamp
+
+create table oorder (
+  o_w_id int not null,
+  o_d_id int not null,
+  o_id int not null,
+  o_c_id int not null,
+  o_carrier_id int default null,
+  o_ol_cnt decimal(2,0) not null,
+  o_all_local decimal(1,0) not null,
+  o_entry_d timestamp not null default current_timestamp,
+  primary key (o_w_id,o_d_id,o_id),
+  unique (o_w_id,o_d_id,o_c_id,o_id)
 );
 
--- INDEXES
-CREATE INDEX IDX_CUSTOMER_NAME ON CUSTOMER (C_W_ID,C_D_ID,C_LAST,C_FIRST);
 
--- woohak, add constraints. MySQL/InnoDB storage engine is kind of IoT.
+create table order_line (
+  ol_w_id int not null,
+  ol_d_id int not null,
+  ol_o_id int not null,
+  ol_number int not null,
+  ol_i_id int not null,
+  ol_delivery_d timestamp null default null,
+  ol_amount decimal(6,2) not null,
+  ol_supply_w_id int not null,
+  ol_quantity decimal(2,0) not null,
+  ol_dist_info char(24) not null,
+  primary key (ol_w_id,ol_d_id,ol_o_id,ol_number)
+);
+
+create table stock (
+  s_w_id int not null,
+  s_i_id int not null,
+  s_quantity decimal(4,0) not null,
+  s_ytd decimal(8,2) not null,
+  s_order_cnt int not null,
+  s_remote_cnt int not null,
+  s_data varchar(50) not null,
+  s_dist_01 char(24) not null,
+  s_dist_02 char(24) not null,
+  s_dist_03 char(24) not null,
+  s_dist_04 char(24) not null,
+  s_dist_05 char(24) not null,
+  s_dist_06 char(24) not null,
+  s_dist_07 char(24) not null,
+  s_dist_08 char(24) not null,
+  s_dist_09 char(24) not null,
+  s_dist_10 char(24) not null,
+  primary key (s_w_id,s_i_id)
+);
+
+create table warehouse (
+  w_id int not null,
+  w_ytd decimal(12,2) not null,
+  w_tax decimal(4,4) not null,
+  w_name varchar(10) not null,
+  w_street_1 varchar(20) not null,
+  w_street_2 varchar(20) not null,
+  w_city varchar(20) not null,
+  w_state char(2) not null,
+  w_zip char(9) not null,
+  primary key (w_id)
+);
+
+-- indexes
+create index idx_customer_name on customer (c_w_id,c_d_id,c_last,c_first);
+
+-- woohak, add constraints. mysql/innodb storage engine is kind of iot.
 -- and add constraints and make indexes later aretoo slow when running a single thread.
--- so I just add create index and foreign key constraints before loading data.
+-- so i just add create index and foreign key constraints before loading data.
 
 -- already created
--- CREATE INDEX IDX_CUSTOMER ON CUSTOMER (C_W_ID,C_D_ID,C_LAST,C_FIRST);
-CREATE INDEX IDX_ORDER ON OORDER (O_W_ID,O_D_ID,O_C_ID,O_ID);
--- tpcc-mysql create two indexes for the foreign key constraints, Is it really necessary?
--- CREATE INDEX FKEY_STOCK_2 ON STOCK (S_I_ID);
--- CREATE INDEX FKEY_ORDER_LINE_2 ON ORDER_LINE (OL_SUPPLY_W_ID,OL_I_ID);
+-- create index idx_customer on customer (c_w_id,c_d_id,c_last,c_first);
+create index idx_order on oorder (o_w_id,o_d_id,o_c_id,o_id);
+-- tpcc-mysql create two indexes for the foreign key constraints, is it really necessary?
+-- create index fkey_stock_2 on stock (s_i_id);
+-- create index fkey_order_line_2 on order_line (ol_supply_w_id,ol_i_id);
 
--- add 'ON DELETE CASCADE'  to clear table work correctly
+-- add 'on delete cascade'  to clear table work correctly
 
-ALTER TABLE DISTRICT  ADD CONSTRAINT FKEY_DISTRICT_1 FOREIGN KEY(D_W_ID) REFERENCES WAREHOUSE(W_ID) ON DELETE CASCADE;
-ALTER TABLE CUSTOMER ADD CONSTRAINT FKEY_CUSTOMER_1 FOREIGN KEY(C_W_ID,C_D_ID) REFERENCES DISTRICT(D_W_ID,D_ID)  ON DELETE CASCADE ;
-ALTER TABLE HISTORY  ADD CONSTRAINT FKEY_HISTORY_1 FOREIGN KEY(H_C_W_ID,H_C_D_ID,H_C_ID) REFERENCES CUSTOMER(C_W_ID,C_D_ID,C_ID) ON DELETE CASCADE;
-ALTER TABLE HISTORY  ADD CONSTRAINT FKEY_HISTORY_2 FOREIGN KEY(H_W_ID,H_D_ID) REFERENCES DISTRICT(D_W_ID,D_ID) ON DELETE CASCADE;
-ALTER TABLE NEW_ORDER ADD CONSTRAINT FKEY_NEW_ORDER_1 FOREIGN KEY(NO_W_ID,NO_D_ID,NO_O_ID) REFERENCES OORDER(O_W_ID,O_D_ID,O_ID) ON DELETE CASCADE;
-ALTER TABLE OORDER ADD CONSTRAINT FKEY_ORDER_1 FOREIGN KEY(O_W_ID,O_D_ID,O_C_ID) REFERENCES CUSTOMER(C_W_ID,C_D_ID,C_ID) ON DELETE CASCADE;
-ALTER TABLE ORDER_LINE ADD CONSTRAINT FKEY_ORDER_LINE_1 FOREIGN KEY(OL_W_ID,OL_D_ID,OL_O_ID) REFERENCES OORDER(O_W_ID,O_D_ID,O_ID) ON DELETE CASCADE;
-ALTER TABLE ORDER_LINE ADD CONSTRAINT FKEY_ORDER_LINE_2 FOREIGN KEY(OL_SUPPLY_W_ID,OL_I_ID) REFERENCES STOCK(S_W_ID,S_I_ID) ON DELETE CASCADE;
-ALTER TABLE STOCK ADD CONSTRAINT FKEY_STOCK_1 FOREIGN KEY(S_W_ID) REFERENCES WAREHOUSE(W_ID) ON DELETE CASCADE;
-ALTER TABLE STOCK ADD CONSTRAINT FKEY_STOCK_2 FOREIGN KEY(S_I_ID) REFERENCES ITEM(I_ID) ON DELETE CASCADE;
+alter table district  add constraint fkey_district_1 foreign key(d_w_id) references warehouse(w_id) on delete cascade;
+alter table customer add constraint fkey_customer_1 foreign key(c_w_id,c_d_id) references district(d_w_id,d_id)  on delete cascade ;
+alter table history  add constraint fkey_history_1 foreign key(h_c_w_id,h_c_d_id,h_c_id) references customer(c_w_id,c_d_id,c_id) on delete cascade;
+alter table history  add constraint fkey_history_2 foreign key(h_w_id,h_d_id) references district(d_w_id,d_id) on delete cascade;
+alter table new_order add constraint fkey_new_order_1 foreign key(no_w_id,no_d_id,no_o_id) references oorder(o_w_id,o_d_id,o_id) on delete cascade;
+alter table oorder add constraint fkey_order_1 foreign key(o_w_id,o_d_id,o_c_id) references customer(c_w_id,c_d_id,c_id) on delete cascade;
+alter table order_line add constraint fkey_order_line_1 foreign key(ol_w_id,ol_d_id,ol_o_id) references oorder(o_w_id,o_d_id,o_id) on delete cascade;
+alter table order_line add constraint fkey_order_line_2 foreign key(ol_supply_w_id,ol_i_id) references stock(s_w_id,s_i_id) on delete cascade;
+alter table stock add constraint fkey_stock_1 foreign key(s_w_id) references warehouse(w_id) on delete cascade;
+alter table stock add constraint fkey_stock_2 foreign key(s_i_id) references item(i_id) on delete cascade;
 
 
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
+set foreign_key_checks=@old_foreign_key_checks;
+set unique_checks=@old_unique_checks;
 

@@ -36,52 +36,52 @@ public class Delivery extends TPCCProcedure {
     private static final Logger LOG = Logger.getLogger(Delivery.class);
 
 	public SQLStmt delivGetOrderIdSQL = new SQLStmt(
-	        "SELECT NO_O_ID FROM " + TPCCConstants.TABLENAME_NEWORDER + 
+            ("SELECT NO_O_ID FROM " + TPCCConstants.TABLENAME_NEWORDER +
 	        " WHERE NO_D_ID = ? " +
 	        "   AND NO_W_ID = ? " +
 	        " ORDER BY NO_O_ID ASC " +
-	        " LIMIT 1");
+	        " LIMIT 1").toLowerCase());
 	
 	public SQLStmt delivDeleteNewOrderSQL = new SQLStmt(
-	        "DELETE FROM " + TPCCConstants.TABLENAME_NEWORDER +
+            ("DELETE FROM " + TPCCConstants.TABLENAME_NEWORDER +
 			" WHERE NO_O_ID = ? " +
             "   AND NO_D_ID = ?" +
-			"   AND NO_W_ID = ?");
+			"   AND NO_W_ID = ?").toLowerCase());
 	
 	public SQLStmt delivGetCustIdSQL = new SQLStmt(
-	        "SELECT O_C_ID FROM " + TPCCConstants.TABLENAME_OPENORDER + 
+            ("SELECT O_C_ID FROM " + TPCCConstants.TABLENAME_OPENORDER +
 	        " WHERE O_ID = ? " +
             "   AND O_D_ID = ? " +
-	        "   AND O_W_ID = ?");
+	        "   AND O_W_ID = ?").toLowerCase());
 	
 	public SQLStmt delivUpdateCarrierIdSQL = new SQLStmt(
-	        "UPDATE " + TPCCConstants.TABLENAME_OPENORDER + 
+            ("UPDATE " + TPCCConstants.TABLENAME_OPENORDER +
 	        "   SET O_CARRIER_ID = ? " +
 			" WHERE O_ID = ? " +
 	        "   AND O_D_ID = ?" +
-			"   AND O_W_ID = ?");
+			"   AND O_W_ID = ?").toLowerCase());
 	
 	public SQLStmt delivUpdateDeliveryDateSQL = new SQLStmt(
-	        "UPDATE " + TPCCConstants.TABLENAME_ORDERLINE +
+            ("UPDATE " + TPCCConstants.TABLENAME_ORDERLINE +
 	        "   SET OL_DELIVERY_D = ? " +
 			" WHERE OL_O_ID = ? " +
 			"   AND OL_D_ID = ? " +
-			"   AND OL_W_ID = ? ");
+			"   AND OL_W_ID = ? ").toLowerCase());
 	
 	public SQLStmt delivSumOrderAmountSQL = new SQLStmt(
-	        "SELECT SUM(OL_AMOUNT) AS OL_TOTAL " +
+            ("SELECT SUM(OL_AMOUNT) AS OL_TOTAL " +
 			"  FROM " + TPCCConstants.TABLENAME_ORDERLINE + 
 			" WHERE OL_O_ID = ? " +
 			"   AND OL_D_ID = ? " +
-			"   AND OL_W_ID = ?");
+			"   AND OL_W_ID = ?").toLowerCase());
 	
 	public SQLStmt delivUpdateCustBalDelivCntSQL = new SQLStmt(
-	        "UPDATE " + TPCCConstants.TABLENAME_CUSTOMER +
+            ("UPDATE " + TPCCConstants.TABLENAME_CUSTOMER +
 	        "   SET C_BALANCE = C_BALANCE + ?," +
 			"       C_DELIVERY_CNT = C_DELIVERY_CNT + 1 " +
 			" WHERE C_W_ID = ? " +
 			"   AND C_D_ID = ? " +
-			"   AND C_ID = ? ");
+			"   AND C_ID = ? ").toLowerCase());
 
 
 	// Delivery Txn
@@ -129,7 +129,7 @@ public class Delivery extends TPCCProcedure {
                 continue;
             }
 
-            int no_o_id = rs.getInt("NO_O_ID");
+            int no_o_id = rs.getInt("NO_O_ID".toLowerCase());
             orderIDs[d_id - 1] = no_o_id;
             rs.close();
             rs = null;
@@ -165,7 +165,7 @@ public class Delivery extends TPCCProcedure {
                 if (trace) LOG.warn(msg);
                 throw new RuntimeException(msg);
             }
-            c_id = rs.getInt("O_C_ID");
+            c_id = rs.getInt("O_C_ID".toLowerCase());
             rs.close();
 
             delivUpdateCarrierId.setInt(1, o_carrier_id);
@@ -212,11 +212,11 @@ public class Delivery extends TPCCProcedure {
                 if (trace) LOG.warn(msg);
                 throw new RuntimeException(msg);
             }
-            ol_total = rs.getFloat("OL_TOTAL");
+            ol_total = rs.getFloat("OL_TOTAL".toLowerCase());
             rs.close();
 
             int idx = 1; // HACK: So that we can debug this query
-            delivUpdateCustBalDelivCnt.setDouble(idx++, ol_total);
+            delivUpdateCustBalDelivCnt.setFloat(idx++, ol_total);
             delivUpdateCustBalDelivCnt.setInt(idx++, w_id);
             delivUpdateCustBalDelivCnt.setInt(idx++, d_id);
             delivUpdateCustBalDelivCnt.setInt(idx++, c_id);
